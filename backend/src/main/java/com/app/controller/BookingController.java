@@ -1,5 +1,6 @@
 package com.app.controller;
 
+import com.app.dto.BookingRequestDto;
 import com.app.entity.Booking;
 import com.app.service.BookingService;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +19,8 @@ public class BookingController {
     }
 
     @PostMapping
-    public ResponseEntity<Booking> createBooking(@RequestBody Booking booking) {
-        return ResponseEntity.ok(bookingService.saveBooking(booking));
+    public ResponseEntity<Booking> createBooking(@RequestBody BookingRequestDto request) {
+        return ResponseEntity.ok(bookingService.createBooking(request));
     }
 
     @GetMapping
@@ -27,8 +28,33 @@ public class BookingController {
         return ResponseEntity.ok(bookingService.getAllBookings());
     }
 
+    // ✅ MOVE THIS ABOVE /{id}
+    @GetMapping("/customer/{customerId}/latest")
+    public ResponseEntity<Booking> getLatestBookingForCustomer(
+            @PathVariable Integer customerId
+    ) {
+        return ResponseEntity.ok(
+                bookingService.getLatestBookingForCustomer(customerId)
+        );
+    }
+
+    // ❗ MUST BE LAST
     @GetMapping("/{id}")
     public ResponseEntity<Booking> getBookingById(@PathVariable Integer id) {
         return ResponseEntity.ok(bookingService.getBookingById(id));
     }
+    
+    @GetMapping("/customer/{customerId}")
+    public ResponseEntity<List<Booking>> getBookingsForCustomer(
+            @PathVariable Integer customerId
+    ) {
+        return ResponseEntity.ok(
+            bookingService.getBookingsForCustomer(customerId)
+        );
+    }
+    
+
 }
+
+
+

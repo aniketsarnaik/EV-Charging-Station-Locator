@@ -2,6 +2,7 @@ package com.app.service;
 
 import com.app.entity.OtpSession;
 import com.app.entity.Booking;
+import com.app.entity.ChargingSession;
 import com.app.repository.OtpSessionRepository;
 import com.app.repository.BookingRepository;
 import org.springframework.stereotype.Service;
@@ -15,17 +16,20 @@ public class OtpSessionServiceImpl implements OtpSessionService {
     private final OtpSessionRepository otpSessionRepository;
     private final BookingRepository bookingRepository;
     private final EmailService emailService;
+    private final ChargingSessionService chargingSessionService;
 
-    // ✅ CONSTRUCTOR (UNCHANGED)
-    public OtpSessionServiceImpl(OtpSessionRepository otpSessionRepository,
-                                 BookingRepository bookingRepository,
-                                 EmailService emailService) {
+    public OtpSessionServiceImpl(
+            OtpSessionRepository otpSessionRepository,
+            BookingRepository bookingRepository,
+            EmailService emailService,
+            ChargingSessionService chargingSessionService
+    ) {
         this.otpSessionRepository = otpSessionRepository;
         this.bookingRepository = bookingRepository;
         this.emailService = emailService;
+        this.chargingSessionService = chargingSessionService;
     }
 
-    // ❌ EXISTING METHOD (UNCHANGED)
     @Override
     public OtpSession saveOtpSession(OtpSession otpSession) {
 
@@ -43,7 +47,6 @@ public class OtpSessionServiceImpl implements OtpSessionService {
         return savedOtp;
     }
 
-    // ✅ NEW METHOD (SAFE ADDITION)
     @Override
     public void generateOtp(Integer bookingId, String otpType) {
 
@@ -67,20 +70,18 @@ public class OtpSessionServiceImpl implements OtpSessionService {
         );
     }
 
-    // ❌ EXISTING METHOD (UNCHANGED)
     @Override
     public OtpSession getOtpById(Integer otpId) {
         return otpSessionRepository.findById(otpId)
                 .orElseThrow(() -> new RuntimeException("OTP not found"));
     }
 
-    // ❌ EXISTING METHOD (UNCHANGED)
     @Override
     public List<OtpSession> getAllOtpSessions() {
         return otpSessionRepository.findAll();
     }
 
-    // ❌ EXISTING METHOD (UNCHANGED)
+    // ✅ FIXED: HANDLE BOTH START AND END CHARGING
     @Override
     public void verifyOtp(Integer otpId, String inputOtp) {
 
@@ -96,5 +97,27 @@ public class OtpSessionServiceImpl implements OtpSessionService {
 
         otp.setVerified(true);
         otpSessionRepository.save(otp);
+
+        Integer bookingId = otp.getBooking().getBookingId();
+
+        // 🔥 START CHARGING
+        if ("START_CHARGING".equals(otp.getOtpType())) {
+            chargingSessionService.startChargingSession(bookingId);
+        }
+
+        // 🔥 END CHARGING
+        if ("END_CHARGING".equals(otp.getOtpType())) {
+            chargingSessionService
+                .getAllChargingSessions()
+                .stream()
+                .filter(s ->
+                        s.getBooking().getBookingId().equals(bookingId)
+                        && "IN_PROGRESS".equals(s.getSessionStatus())
+                )
+                .findFirst()
+                .ifPresent(s ->
+                        chargingSessionService.endSession(s.getSessionId())
+                );
+        }
     }
 }

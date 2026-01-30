@@ -12,4 +12,6 @@ public interface ChargingSessionService {
     ChargingSession startSession(Integer bookingId);
 
     ChargingSession endSession(Integer sessionId);
+    
+    void startChargingSession(Integer bookingId);
 }

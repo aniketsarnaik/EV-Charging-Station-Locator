@@ -15,11 +15,21 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendOtpEmail(String toEmail, String otpCode) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(toEmail);
-        message.setSubject("EV Charging OTP");
-        message.setText("Your OTP for starting charging session is: " + otpCode);
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(toEmail);
+            message.setSubject("EV Charging OTP");
+            message.setText("Your OTP for starting charging session is: " + otpCode);
 
-        mailSender.send(message);
+            mailSender.send(message);
+
+            System.out.println("✅ OTP email sent to: " + toEmail);
+
+        } catch (Exception e) {
+            System.out.println("❌ Email sending failed: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
+
+    
 }

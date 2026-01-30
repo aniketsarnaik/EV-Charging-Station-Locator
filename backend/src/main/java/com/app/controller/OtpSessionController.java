@@ -41,4 +41,13 @@ public class OtpSessionController {
     public ResponseEntity<List<OtpSession>> getAllOtps() {
         return ResponseEntity.ok(otpSessionService.getAllOtpSessions());
     }
+    
+    @PostMapping("/start/{bookingId}")
+    public ResponseEntity<String> generateStartOtp(
+            @PathVariable Integer bookingId
+    ) {
+        otpSessionService.generateOtp(bookingId, "START_CHARGING");
+        return ResponseEntity.ok("Start charging OTP sent");
+    }
+
 }

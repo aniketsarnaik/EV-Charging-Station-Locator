@@ -30,4 +30,21 @@ public class ChargerServiceImpl implements ChargerService {
     public List<Charger> getAllChargers() {
         return chargerRepository.findAll();
     }
+    
+    @Override
+    public List<Charger> getChargersByStation(Integer stationId) {
+        return chargerRepository.findByStation_StationId(stationId);
+    }
+    @Override
+    public List<Charger> getChargersByStationId(Integer stationId) {
+        return chargerRepository.findByStation_StationId(stationId);
+    }
+    
+    @Override
+    public void deleteCharger(Integer id) {
+        chargerRepository.deleteById(id);
+    }
+
+
+
 }

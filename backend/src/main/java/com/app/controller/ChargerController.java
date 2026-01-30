@@ -34,4 +34,21 @@ public class ChargerController {
     public ResponseEntity<Charger> getChargerById(@PathVariable Integer id) {
         return ResponseEntity.ok(chargerService.getChargerById(id));
     }
+    @GetMapping("/station/{stationId}")
+    public ResponseEntity<List<Charger>> getChargersByStation(
+            @PathVariable Integer stationId
+    ) {
+        return ResponseEntity.ok(
+                chargerService.getChargersByStationId(stationId)
+        );
+    }
+ // ✅ DELETE CHARGER
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCharger(@PathVariable Integer id) {
+        chargerService.deleteCharger(id);
+        return ResponseEntity.noContent().build();
+    }
+
+
+
 }

@@ -10,4 +10,11 @@ public interface ChargerService {
     Charger getChargerById(Integer id);
 
     List<Charger> getAllChargers();
+    
+    List<Charger> getChargersByStation(Integer stationId);
+   
+    List<Charger> getChargersByStationId(Integer stationId);
+
+    void deleteCharger(Integer id);
+
 }

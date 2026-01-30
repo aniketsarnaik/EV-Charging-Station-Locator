@@ -41,4 +41,6 @@ public class ChargingSession {
 
     public String getSessionStatus() { return sessionStatus; }
     public void setSessionStatus(String sessionStatus) { this.sessionStatus = sessionStatus; }
+
+	
 }
